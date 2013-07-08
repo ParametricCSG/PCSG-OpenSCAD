@@ -26,6 +26,7 @@ parser.add_argument('--version', action='version', version="%(prog)s 0.0.1-dev")
 #Always output help by default
 if len(sys.argv) == 1:
     parser.print_help()
+    sys.exit(0)
 args = parser.parse_args()
 
 class OpenSCADEngine:
@@ -61,19 +62,35 @@ class OpenSCADEngine:
 				    
     def makeCube(self, data):
         """Take a python dictionary and make an OpenSCAD compatible Cube string"""
-        return "cube(size=" + str(data['size']) + ");\n"
+        #apply centering
+        for idx, val in enumerate(data['center']):
+            if val:
+                data['location'][idx] -= data['size'][idx]/2
+        return "translate(" + str(data['location']) + ")cube(size=" + \
+                str(data['size']) + ");\n"
    
     def makeSphere(self, data):
         """Take a python dictionary and make an OpenSCAD compatible Sphere string"""
-        return "sphere(r=" + str(data['radius']) + ");\n"
+        #apply centering
+        for idx, val in enumerate(data['center']):
+            if not val:
+                data['location'][idx] += data['radius']
+        return "translate(" + str(data['location']) + ")sphere(r=" + \
+                str(data['radius']) + ");\n"
 
     def makeCylinder(self, data):
         """Take a python dictionary and make an OpenSCAD compatible Cube string"""
-        return "cylinder(r=" + str(data['radius']) + ", h=" + str(data['height']) + ");\n"
+        #apply centering
+        for idx, val in enumerate(data['center']):
+            if not val and idx in [0,1]: 
+                data['location'][idx] += data['radius']
+            elif val and idx == 2:
+                data['location'][idx] -= data['height']/2
+        return "translate(" + str(data['location']) + ")cylinder(r=" + \
+                str(data['radius']) + ", h=" + str(data['height']) + ");\n"
 
             
-        
-j = json.loads(args.input.read())	
+j = json.loads(args.input.read())
 c = OpenSCADEngine()
 c.parseJSON(j)
 args.output.write(c.output)
