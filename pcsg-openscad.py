@@ -53,6 +53,8 @@ class OpenSCADEngine:
                     if len(data['color']) >= 3:
                         a = "color(" + str(data['color']) + ")"
                     a += "translate(" + str(data['location']) + ")"
+                    a += "rotate(a=" + str(data['rotation']['angle']) + ", v=" + \
+                         str(data['rotation']['axis']) + ")"
                     if data['name'] == "cube":
                         a += self.makeCube(data)
                     if data['name'] == "sphere":
