@@ -50,45 +50,56 @@ class OpenSCADEngine:
             if data['category'] == "element":
                 if data['name'] in self.elements:
                     a = ""
+                    if len(data['color']) >= 3:
+                        a = "color(" + str(data['color']) + ")"
+                    a += "translate(" + str(data['location']) + ")"
                     if data['name'] == "cube":
-                        a = self.makeCube(data)
+                        a += self.makeCube(data)
                     if data['name'] == "sphere":
-                        a = self.makeSphere(data)
+                        a += self.makeSphere(data)
                     if data['name'] == "cylinder":
-                        a = self.makeCylinder(data)     
+                        a += self.makeCylinder(data)     
                     self.output += " " * self.level + a
                 else:
                     sys.stderr.write("ERROR: Unknown element name\n")
 				    
     def makeCube(self, data):
         """Take a python dictionary and make an OpenSCAD compatible Cube string"""
+        a = ""
         #apply centering
+        centering = [0,0,0]
         for idx, val in enumerate(data['center']):
             if val:
-                data['location'][idx] -= data['size'][idx]/2
-        return "translate(" + str(data['location']) + ")cube(size=" + \
-                str(data['size']) + ");\n"
-   
+                centering[idx] = -data['size'][idx]/2
+        a += "translate(" + str(centering) + ")"
+        a += "cube(size=" + str(data['size']) + ");\n"
+        return a
+        
     def makeSphere(self, data):
         """Take a python dictionary and make an OpenSCAD compatible Sphere string"""
+        a = ""
         #apply centering
+        centering = [0,0,0]
         for idx, val in enumerate(data['center']):
             if not val:
-                data['location'][idx] += data['radius']
-        return "translate(" + str(data['location']) + ")sphere(r=" + \
-                str(data['radius']) + ");\n"
-
+                centering[idx] += data['radius']
+        a += "translate(" + str(centering) + ")"
+        a += "sphere(r=" + str(data['radius']) + ");\n"
+        return a
+        
     def makeCylinder(self, data):
         """Take a python dictionary and make an OpenSCAD compatible Cube string"""
+        a = ""
         #apply centering
+        centering = [0,0,0]
         for idx, val in enumerate(data['center']):
             if not val and idx in [0,1]: 
-                data['location'][idx] += data['radius']
+                centering[idx] = data['radius']
             elif val and idx == 2:
-                data['location'][idx] -= data['height']/2
-        return "translate(" + str(data['location']) + ")cylinder(r=" + \
-                str(data['radius']) + ", h=" + str(data['height']) + ");\n"
-
+                centering[idx] = -data['height']/2
+        a += "translate(" + str(centering) + ")"
+        a += "cylinder(r=" + str(data['radius']) + ", h=" + str(data['height']) + ");\n"
+        return a
             
 j = json.loads(args.input.read())
 c = OpenSCADEngine()
