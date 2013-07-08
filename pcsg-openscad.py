@@ -33,7 +33,7 @@ class OpenSCADEngine:
     def __init__(self):
         self.level = 0
         self.output = ""
-        self.operations = ["union", "difference", "intersection"]
+        self.operations = ["union", "difference", "intersection", "hull"]
         self.elements = ["cube", "cylinder", "sphere", "cone"]
         
     def parseJSON(self, data):
