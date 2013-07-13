@@ -61,51 +61,59 @@ class OpenSCADEngine:
                     self.output += a
                     self.parseJSON(data['construction'])
             if data['category'] == "element":
-                if 'color' in data and len(data['color']) >= 3:
-                    self.output += "color(" + str(data['color']) + ")"
-                if data['name'] in self.elements:
-                    a = ""
-                    a += "translate(" + str(data['location']) + ")"
-                    a += "rotate(a=" + str(data['rotation']['angle']) + ", v=" + \
-                         str(data['rotation']['axis']) + ")"
-                    if data['name'] == "cube":
-                        a += self.makeCube(data)
-                    if data['name'] == "sphere":
-                        a += self.makeSphere(data)
-                    if data['name'] == "cylinder":
-                        a += self.makeCylinder(data)
-                    self.output += "    " * self.level + a
-                else:
-                    print "Found top level element " + data['name']
-                    self.parseJSON(data['construction'])
+                self.output += " " * self.level * args.indent + self.parseElement(data)
+
+    def parseOperation(self, data):
+        """Parse an operation and generate an OpenSCAD equivalent"""
+        pass
+
+    def parseElement(self, data):
+        tempStr = ""
+        if 'color' in data and len(data['color']) >= 3:
+            tempStr += "color(" + str(data['color']) + ")"
+        if data['name'] in self.elements:
+            tempStr += "translate(" + str(data['location']) + ")"
+            tempStr += "rotate(a=" + str(data['rotation']['angle']) + ", v=" + \
+                        str(data['rotation']['axis']) + ")"
+            if data['name'] == "cube":
+                tempStr += self.makeCube(data)
+            if data['name'] == "sphere":
+                tempStr += self.makeSphere(data)
+            if data['name'] == "cylinder":
+                tempStr += self.makeCylinder(data)
+        else:
+            print "Found top level element " + data['name']
+            print "Unrecognized by the parser... traversing to construction"
+            self.parseJSON(data['construction'])
+        return tempStr
 
     def makeCube(self, data):
         """Take a python dictionary and make an OpenSCAD compatible Cube string"""
-        a = ""
+        tempStr = ""
         #apply centering
         centering = [0,0,0]
         for idx, val in enumerate(data['center']):
             if val:
                 centering[idx] = -data['size'][idx]/2
-        a += "translate(" + str(centering) + ")"
-        a += "cube(size=" + str(data['size']) + ");\n"
+        tempStr += "translate(" + str(centering) + ")"
+        tempStr += "cube(size=" + str(data['size']) + ");\n"
         return a
 
     def makeSphere(self, data):
         """Take a python dictionary and make an OpenSCAD compatible Sphere string"""
-        a = ""
+        tempStr = ""
         #apply centering
         centering = [0,0,0]
         for idx, val in enumerate(data['center']):
             if not val:
                 centering[idx] += data['radius']
-        a += "translate(" + str(centering) + ")"
-        a += "sphere(r=" + str(data['radius']) + ", $fn=" + str(data['radius']) + ");\n"
-        return a
+        tempStr += "translate(" + str(centering) + ")"
+        tempStr += "sphere(r=" + str(data['radius']) + ", $fn=" + str(data['radius']) + ");\n"
+        return tempStr
 
     def makeCylinder(self, data):
         """Take a python dictionary and make an OpenSCAD compatible Cube string"""
-        a = ""
+        tempStr = ""
         #apply centering
         centering = [0,0,0]
         for idx, val in enumerate(data['center']):
@@ -113,14 +121,17 @@ class OpenSCADEngine:
                 centering[idx] = data['radius']
             elif val and idx == 2:
                 centering[idx] = -data['height']/2
-        a += "translate(" + str(centering) + ")"
-        a += "cylinder(r=" + str(data['radius']) + ", h=" + str(data['height']) \
+        tempStr += "translate(" + str(centering) + ")"
+        tempStr += "cylinder(r=" + str(data['radius']) + ", h=" + str(data['height']) \
               + ", $fn=" + str((data['radius'])*20) + ");\n"
-        return a
+        return tempStr
 
     def processRotation(self, data):
         return "rotate(a=" + str(data['rotation']['angle']) + ", v=" + \
                          str(data['rotation']['axis']) + ")"
+
+    def isAllZeros(self, vector):
+        return all( v == 0 for v in vector)
 
 j = json.loads(args.input.read())
 c = OpenSCADEngine()
