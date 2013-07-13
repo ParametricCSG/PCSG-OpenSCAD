@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+from __future__ import absolute_import, division, print_function, unicode_literals
 import argparse
 import sys
 import json
@@ -58,8 +59,8 @@ class OpenSCADEngine:
                 if data['name'] in self.elements:
                     self.output += self.parseElement(data)
                 else:
-                    print "Found top level element " + data['name']
-                    print "Unrecognized by the parser... traversing to construction"
+                    print("Found top level element " + data['name'])
+                    print("Unrecognized by the parser... traversing to construction")
                     self.parseJSON(data['construction'])
 
     def parseOperation(self, data):
