@@ -41,16 +41,8 @@ class OpenSCADEngine:
         if data['category']:
             if data['category'] == "operation":
                 if data['name'] in self.operations:
-                    a = ""
-                    if 'color' in data and len(data['color']) >= 3:
-                        a = "color(" + str(data['color']) + ")"
-                    if data['name'] == "translate":
-                        a += "translate(" + str(data['location']) + "){"
-                    if data['name'] == "rotate":
-                        a += self.processRotation(data) + "{"
-                    else:
-                        a = data['name'] + "(){\n"
-                    self.output += " " * self.level * args.indent + a
+                    scadOperation = self.parseOperation(data)
+                    self.output += " " * self.level * args.indent + scadOperation
                     for types in data['elements']:
                         self.level += 1
                         self.parseJSON(types)
@@ -61,30 +53,45 @@ class OpenSCADEngine:
                     self.output += a
                     self.parseJSON(data['construction'])
             if data['category'] == "element":
-                self.output += " " * self.level * args.indent + self.parseElement(data)
+                props = self.parseProperties(data)
+                self.output += " " * self.level * args.indent + props
+                if data['name'] in self.elements:
+                    self.output += self.parseElement(data)
+                else:
+                    print "Found top level element " + data['name']
+                    print "Unrecognized by the parser... traversing to construction"
+                    self.parseJSON(data['construction'])
 
     def parseOperation(self, data):
         """Parse an operation and generate an OpenSCAD equivalent"""
-        pass
+        tempStr = self.parseProperties(data)
+        if data['name'] == "translate":
+            tempStr += "translate(" + str(data['location']) + "){"
+        if data['name'] == "rotate":
+            tempStr += self.processRotation(data) + "{"
+        else:
+            tempStr = data['name'] + "(){\n"
+        return tempStr
 
-    def parseElement(self, data):
+    def parseProperties(self, data):
         tempStr = ""
         if 'color' in data and len(data['color']) >= 3:
             tempStr += "color(" + str(data['color']) + ")"
-        if data['name'] in self.elements:
+        if 'location' in data:
             tempStr += "translate(" + str(data['location']) + ")"
+        if 'rotation' in data:
             tempStr += "rotate(a=" + str(data['rotation']['angle']) + ", v=" + \
                         str(data['rotation']['axis']) + ")"
-            if data['name'] == "cube":
-                tempStr += self.makeCube(data)
-            if data['name'] == "sphere":
-                tempStr += self.makeSphere(data)
-            if data['name'] == "cylinder":
-                tempStr += self.makeCylinder(data)
-        else:
-            print "Found top level element " + data['name']
-            print "Unrecognized by the parser... traversing to construction"
-            self.parseJSON(data['construction'])
+        return tempStr
+
+    def parseElement(self, data):
+        tempStr = ""
+        if data['name'] == "cube":
+            tempStr += self.makeCube(data)
+        elif data['name'] == "sphere":
+            tempStr += self.makeSphere(data)
+        elif data['name'] == "cylinder":
+            tempStr += self.makeCylinder(data)
         return tempStr
 
     def makeCube(self, data):
