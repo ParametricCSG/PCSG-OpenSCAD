@@ -138,6 +138,9 @@ class OpenSCADEngine:
         return "rotate(a=" + str(data['rotation']['angle']) + ", v=" + \
                          str(data['rotation']['axis']) + ")"
 
+    def makeTranslate(self, location):
+        return "translate(" + str(location) + ")"
+
     def isAllZeros(self, vector):
         return all( v == 0 for v in vector)
 
