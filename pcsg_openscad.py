@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/python3.3
 from __future__ import absolute_import, division, print_function, unicode_literals
 import argparse
 import sys
@@ -11,25 +11,6 @@ Operation:
 Evaluate and regenerate JSON tree by order...
 required elements, parameters, parameter operations, elements, element operations
 '''
-#Setup Command line arguments
-parser = argparse.ArgumentParser(
-    prog = "pcsg-openscad", 
-    usage = "%(prog)s [options] input...",  
-    description = "An engine for PCSG using OpenSCAD."
-    )
-parser.add_argument("-o", "--output", nargs='?', type=argparse.FileType('w'), default=sys.stdout, help = "Output file, defaults to stdout")
-parser.add_argument("input", nargs='?', type=argparse.FileType('r'), default=sys.stdin, help = "Input file, defaults to stdin")
-parser.add_argument("-v", "--verbose", type=bool, help="verbose output while traversing PCSG file")
-parser.add_argument("-s", "--show", action='store_true', default=False, help="launch OpenSCAD with the file when finished")
-parser.add_argument("-i", "--indent", type=int, default=4, help="set number of spaces for indentation (default: 4)")
-parser.add_argument('--version', action='version', version="%(prog)s 0.0.1-dev")
-
-#Always output help by default
-if len(sys.argv) == 1:
-    parser.print_help()
-    sys.exit(0) # exit after help display
-
-args = parser.parse_args()
 
 class OpenSCADEngine:
     def __init__(self):
@@ -144,9 +125,30 @@ class OpenSCADEngine:
     def isAllZeros(self, vector):
         return all( v == 0 for v in vector)
 
-j = json.loads(args.input.read())
-c = OpenSCADEngine()
-c.parseJSON(j)
-args.output.write(c.output)
-if args.show:
-    subprocess.Popen(["openscad", os.path.abspath(args.output.name)])
+if __name__=="__main__":
+    #Setup Command line arguments
+    parser = argparse.ArgumentParser(
+        prog = "pcsg-openscad",
+        usage = "%(prog)s [options] input...",
+        description = "An engine for PCSG using OpenSCAD."
+        )
+    parser.add_argument("-o", "--output", nargs='?', type=argparse.FileType('w'), default=sys.stdout, help = "Output file, defaults to stdout")
+    parser.add_argument("input", nargs='?', type=argparse.FileType('r'), default=sys.stdin, help = "Input file, defaults to stdin")
+    parser.add_argument("-v", "--verbose", type=bool, help="verbose output while traversing PCSG file")
+    parser.add_argument("-s", "--show", action='store_true', default=False, help="launch OpenSCAD with the file when finished")
+    parser.add_argument("-i", "--indent", type=int, default=4, help="set number of spaces for indentation (default: 4)")
+    parser.add_argument('--version', action='version', version="%(prog)s 0.0.1-dev")
+
+    #Always output help by default
+    if len(sys.argv) == 1:
+        parser.print_help()
+        sys.exit(0) # exit after help display
+
+    args = parser.parse_args()
+
+    j = json.loads(args.input.read())
+    c = OpenSCADEngine()
+    c.parseJSON(j)
+    args.output.write(c.output)
+    if args.show:
+        subprocess.Popen(["openscad", os.path.abspath(args.output.name)])
