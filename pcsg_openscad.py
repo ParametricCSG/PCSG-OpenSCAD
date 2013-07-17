@@ -5,6 +5,7 @@ import sys
 import json
 import os
 import subprocess
+import math
 
 '''
 Operation:
@@ -59,9 +60,9 @@ class OpenSCADEngine:
     def parseProperties(self, data):
         tempStr = ""
         if 'color' in data:
-            tempStr += self.color(data['color']))
+            tempStr += self.color(data['color'])
         if 'location' in data:
-            tempStr += self.translate(data['location']))
+            tempStr += self.translate(data['location'])
         if 'rotation' in data:
             tempStr += self.rotate(data['rotation'])
         return tempStr
@@ -101,7 +102,7 @@ class OpenSCADEngine:
         return max([math.floor(4*radius), 3])
 
     def apothem(self, radius, sides):
-        return radius / math.cos(180/ sides)
+        return radius / math.cos(math.pi/ sides)
 
     def hole(self, data):
         tempStr = ""
@@ -110,6 +111,18 @@ class OpenSCADEngine:
         tempStr += self.applyCentering(centering = data['center'],
                                        extrema = [data['radius'],
                                                   data['radius'],
+                                                  data['height']],
+                                       default = [True,True,False])
+        tempStr += "cylinder(r="+str(radius)+", h="+str(data['height'])+", $fn="+\
+                    str(sides)+");"
+        return tempStr
+
+    def nTube(self, data):
+        tempStr = ""
+        sides = data['sides']
+        radius = self.apothem(radius = data['width'], sides = sides)
+        tempStr += self.applyCentering(centering = data['center'],
+                                       extrema = [radius, radius,
                                                   data['height']],
                                        default = [True,True,False])
         tempStr += "cylinder(r="+str(radius)+", h="+str(data['height'])+", $fn="+\
