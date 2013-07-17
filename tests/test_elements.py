@@ -67,5 +67,20 @@ class TestElements(unittest.TestCase):
         expect = "translate(v=[1.9999999999999996, 1.9999999999999996, -2.0])cylinder(r=3.999999999999999, h=4, $fn=3);"
         self.assertEqual(expect, self.eng.nTube(datas))
 
+    def test_cone1(self):
+        datas = {'topRadius': 4, 'bottomRadius': 5, 'height': 5, 'center':[True,True,False]}
+        expect = "cylinder(r1=5, r2=4, h=5, $fn=100);"
+        self.assertEqual(expect, self.eng.cone(datas))
+
+    def test_cone2(self):
+        datas = {'topRadius': 4, 'bottomRadius': 5, 'height': 5, 'center':[False,False,False]}
+        expect = "translate(v=[2.5, 2.5, 0])cylinder(r1=5, r2=4, h=5, $fn=100);"
+        self.assertEqual(expect, self.eng.cone(datas))
+
+    def test_cone3(self):
+        datas = {'topRadius': 4, 'bottomRadius': 3, 'height': 5, 'center':[False,False,True]}
+        expect = "translate(v=[2.0, 2.0, -2.5])cylinder(r1=3, r2=4, h=5, $fn=80);"
+        self.assertEqual(expect, self.eng.cone(datas))
+
 if __name__ == '__main__':
     unittest.main()

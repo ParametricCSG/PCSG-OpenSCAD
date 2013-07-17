@@ -129,6 +129,20 @@ class OpenSCADEngine:
                     str(sides)+");"
         return tempStr
 
+    def cone(self, data):
+        """Take a python dictionary and make an OpenSCAD compatible Cube string"""
+        tempStr = ""
+        maxRadius = max([data['topRadius'], data['bottomRadius']])
+        tempStr += self.applyCentering(centering = data['center'],
+                                       extrema = [maxRadius,
+                                                  maxRadius,
+                                                  data['height']],
+                                       default = [True,True,False])
+        tempStr += "cylinder(r1=" + str(data['bottomRadius']) +", r2=" + \
+                    str(data['topRadius']) + ", h=" + str(data['height']) + \
+                    ", $fn=" + str(maxRadius*20) + ");"
+        return tempStr
+
     def cube(self, data):
         """Take a python dictionary and make an OpenSCAD compatible Cube string"""
         tempStr = ""
