@@ -98,6 +98,25 @@ class OpenSCADEngine:
                 vect[idx] = extrema[idx]/2
         return self.translate(vect)
 
+    def holeSides(self, radius):
+        return max([math.floor(4*radius), 3])
+
+    def holeRadius(self, radius, sides):
+        return radius / math.cos(180/ sides)
+
+    def makeHole(self, data):
+        tempStr = ""
+        sides = self.holeSides(data['radius'])
+        radius = self.holeRadius(radius = data['radius'], sides = sides)
+        tempStr += self.applyCentering(centering = data['center'],
+                                       extrema = [data['radius'],
+                                                  data['radius'],
+                                                  data['height']],
+                                       default = [True,True,False])
+        tempStr += "cylinder(r="+str(radius)+", h="+str(data['height'])+", $fn="+\
+                    str(sides)+")"
+        return tempStr
+
     def makeCube(self, data):
         """Take a python dictionary and make an OpenSCAD compatible Cube string"""
         tempStr = ""
