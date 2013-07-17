@@ -132,7 +132,7 @@ class OpenSCADEngine:
         tempStr += self.applyCentering(centering = data['center'],
                                        extrema = [data['radius']]*3,
                                        default = [True,True,True])
-        tempStr += "sphere(r=" + str(data['radius']) + ", $fn=" + str(data['radius']) + ");"
+        tempStr += "sphere(r=" + str(data['radius']) + ", $fn=" + str(data['radius']*20) + ");"
         return tempStr
 
     def cylinder(self, data):
