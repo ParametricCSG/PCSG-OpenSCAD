@@ -120,38 +120,29 @@ class OpenSCADEngine:
     def makeCube(self, data):
         """Take a python dictionary and make an OpenSCAD compatible Cube string"""
         tempStr = ""
-        #apply centering
-        centering = [0,0,0]
-        for idx, val in enumerate(data['center']):
-            if val:
-                centering[idx] = -data['size'][idx]/2
-        tempStr += "translate(" + str(centering) + ")"
+        tempStr += self.applyCentering(centering = data['center'],
+                                       extrema = data['size'],
+                                       default = [False,False,False])
         tempStr += "cube(size=" + str(data['size']) + ");\n"
         return a
 
     def makeSphere(self, data):
         """Take a python dictionary and make an OpenSCAD compatible Sphere string"""
         tempStr = ""
-        #apply centering
-        centering = [0,0,0]
-        for idx, val in enumerate(data['center']):
-            if not val:
-                centering[idx] += data['radius']
-        tempStr += "translate(" + str(centering) + ")"
+        tempStr += self.applyCentering(centering = data['center'],
+                                       extrema = [data['radius']]*3,
+                                       default = [True,True,True])
         tempStr += "sphere(r=" + str(data['radius']) + ", $fn=" + str(data['radius']) + ");\n"
         return tempStr
 
     def makeCylinder(self, data):
         """Take a python dictionary and make an OpenSCAD compatible Cube string"""
         tempStr = ""
-        #apply centering
-        centering = [0,0,0]
-        for idx, val in enumerate(data['center']):
-            if not val and idx in [0,1]: 
-                centering[idx] = data['radius']
-            elif val and idx == 2:
-                centering[idx] = -data['height']/2
-        tempStr += "translate(" + str(centering) + ")"
+        tempStr += self.applyCentering(centering = data['center'],
+                                       extrema = [data['radius'],
+                                                  data['radius'],
+                                                  data['height']],
+                                       default = [True,True,False])
         tempStr += "cylinder(r=" + str(data['radius']) + ", h=" + str(data['height']) \
               + ", $fn=" + str((data['radius'])*20) + ");\n"
         return tempStr
