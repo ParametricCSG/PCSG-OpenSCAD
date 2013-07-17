@@ -70,11 +70,11 @@ class OpenSCADEngine:
     def parseElement(self, data):
         tempStr = ""
         if data['name'] == "cube":
-            tempStr += self.makeCube(data)
+            tempStr += self.cube(data)
         elif data['name'] == "sphere":
-            tempStr += self.makeSphere(data)
+            tempStr += self.sphere(data)
         elif data['name'] == "cylinder":
-            tempStr += self.makeCylinder(data)
+            tempStr += self.cylinder(data)
         return tempStr
 
     def makeBool(self, pyBool):
@@ -104,7 +104,7 @@ class OpenSCADEngine:
     def holeRadius(self, radius, sides):
         return radius / math.cos(180/ sides)
 
-    def makeHole(self, data):
+    def hole(self, data):
         tempStr = ""
         sides = self.holeSides(data['radius'])
         radius = self.holeRadius(radius = data['radius'], sides = sides)
@@ -117,7 +117,7 @@ class OpenSCADEngine:
                     str(sides)+")"
         return tempStr
 
-    def makeCube(self, data):
+    def cube(self, data):
         """Take a python dictionary and make an OpenSCAD compatible Cube string"""
         tempStr = ""
         tempStr += self.applyCentering(centering = data['center'],
@@ -126,7 +126,7 @@ class OpenSCADEngine:
         tempStr += "cube(size=" + str(data['size']) + ");\n"
         return a
 
-    def makeSphere(self, data):
+    def sphere(self, data):
         """Take a python dictionary and make an OpenSCAD compatible Sphere string"""
         tempStr = ""
         tempStr += self.applyCentering(centering = data['center'],
@@ -135,7 +135,7 @@ class OpenSCADEngine:
         tempStr += "sphere(r=" + str(data['radius']) + ", $fn=" + str(data['radius']) + ");\n"
         return tempStr
 
-    def makeCylinder(self, data):
+    def cylinder(self, data):
         """Take a python dictionary and make an OpenSCAD compatible Cube string"""
         tempStr = ""
         tempStr += self.applyCentering(centering = data['center'],
