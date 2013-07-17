@@ -85,7 +85,7 @@ class OpenSCADEngine:
         return all( v == 0 for v in vector)
 
     def makeBinaryList(self, vector):
-        """If a value is non zero in a list make it 1"""
+        """If a value is true/false in a list make it 1/0"""
         return str(list(map(int, vector)))
 
     def applyCentering(self, centering, extrema, default=[False,False,False]):
