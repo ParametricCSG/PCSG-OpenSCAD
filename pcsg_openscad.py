@@ -114,7 +114,7 @@ class OpenSCADEngine:
                                                   data['height']],
                                        default = [True,True,False])
         tempStr += "cylinder(r="+str(radius)+", h="+str(data['height'])+", $fn="+\
-                    str(sides)+")"
+                    str(sides)+");"
         return tempStr
 
     def cube(self, data):
@@ -123,8 +123,8 @@ class OpenSCADEngine:
         tempStr += self.applyCentering(centering = data['center'],
                                        extrema = data['size'],
                                        default = [False,False,False])
-        tempStr += "cube(size=" + str(data['size']) + ");\n"
-        return a
+        tempStr += "cube(size=" + str(data['size']) + ");"
+        return tempStr
 
     def sphere(self, data):
         """Take a python dictionary and make an OpenSCAD compatible Sphere string"""
@@ -132,7 +132,7 @@ class OpenSCADEngine:
         tempStr += self.applyCentering(centering = data['center'],
                                        extrema = [data['radius']]*3,
                                        default = [True,True,True])
-        tempStr += "sphere(r=" + str(data['radius']) + ", $fn=" + str(data['radius']) + ");\n"
+        tempStr += "sphere(r=" + str(data['radius']) + ", $fn=" + str(data['radius']) + ");"
         return tempStr
 
     def cylinder(self, data):
@@ -144,7 +144,7 @@ class OpenSCADEngine:
                                                   data['height']],
                                        default = [True,True,False])
         tempStr += "cylinder(r=" + str(data['radius']) + ", h=" + str(data['height']) \
-              + ", $fn=" + str((data['radius'])*20) + ");\n"
+              + ", $fn=" + str((data['radius'])*20) + ");"
         return tempStr
 
     def rotate(self, rotation):
