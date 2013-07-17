@@ -88,6 +88,16 @@ class OpenSCADEngine:
         """If a value is non zero in a list make it 1"""
         return str(list(map(int, vector)))
 
+    def applyCentering(self, centering, extrema, default=[False,False,False]):
+        """Returns a translationg statement to apply centering by axis"""
+        vect = [0, 0, 0]
+        for idx, val in enumerate(centering):
+            if val and not default[idx]:
+                vect[idx] = -extrema[idx]/2
+            elif not val and default[idx]:
+                vect[idx] = extrema[idx]/2
+        return self.translate(vect)
+
     def makeCube(self, data):
         """Take a python dictionary and make an OpenSCAD compatible Cube string"""
         tempStr = ""
