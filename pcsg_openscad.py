@@ -16,7 +16,8 @@ class OpenSCADEngine:
     def __init__(self):
         self.level = 0
         self.output = ""
-        self.operations = ["union", "difference", "intersection", "hull", "translate", "rotate"]
+        self.operations = ["union", "difference", "intersection", "hull",
+                           "translate", "rotate"]
         self.elements = ["cube", "cylinder", "sphere", "cone"]
 
     def parseJSON(self, data):
@@ -76,6 +77,17 @@ class OpenSCADEngine:
             tempStr += self.makeCylinder(data)
         return tempStr
 
+    def makeBool(self, pyBool):
+        """Takes a Python bool (type, or list of bools) and returns an OpenSCAD bool string"""
+        return str(pyBool).lower()
+
+    def isAllZeros(self, vector):
+        return all( v == 0 for v in vector)
+
+    def makeBinaryList(self, vector):
+        """If a value is non zero in a list make it 1"""
+        return str(list(map(int, vector)))
+
     def makeCube(self, data):
         """Take a python dictionary and make an OpenSCAD compatible Cube string"""
         tempStr = ""
@@ -115,15 +127,48 @@ class OpenSCADEngine:
               + ", $fn=" + str((data['radius'])*20) + ");\n"
         return tempStr
 
-    def processRotation(self, data):
-        return "rotate(a=" + str(data['rotation']['angle']) + ", v=" + \
-                         str(data['rotation']['axis']) + ")"
+    def rotate(self, rotation):
+        cleanedAxis = self.makeBinaryList(rotation['axis'])
+        return "rotate(a=" + str(rotation['angle']) + ", v=" + \
+                         str(cleanedAxis) + ")"
 
-    def makeTranslate(self, location):
-        return "translate(" + str(location) + ")"
+    def translate(self, location):
+        if self.isAllZeros(location):
+            return ""
+        else:
+            return "translate(v=" + str(location) + ")"
 
-    def isAllZeros(self, vector):
-        return all( v == 0 for v in vector)
+    def scale(self, multiplier):
+        return "scale(v=" + str(multiplier) + ")"
+
+    def resize(self, resize):
+        cleanedAuto = self.makeBool(resize['auto'])
+        return "resize(newsize=" + str(resize['newsize']) + ", auto=" + cleanedAuto + ")"
+
+    def mirror(self, axis):
+        cleanedAxis = self.makeBinaryList(axis)
+        return "mirror(" + str(cleanedAxis) + ")"
+
+    def multmatrix(self, matrix):
+        return "multmatrix(m=" + str(matrix) + ")"
+
+    def color(self, color):
+        return "color(" + str(color) + ")"
+
+    def minkowski(self):
+        return "minkowski()"
+
+    def hull(self):
+        return "hull()"
+
+    def union(self):
+        return "union()"
+
+    def difference(self):
+        return "difference()"
+
+    def intersection(self):
+        return "intersection()"
 
 if __name__=="__main__":
     #Setup Command line arguments
