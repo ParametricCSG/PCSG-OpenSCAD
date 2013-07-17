@@ -58,13 +58,12 @@ class OpenSCADEngine:
 
     def parseProperties(self, data):
         tempStr = ""
-        if 'color' in data and len(data['color']) >= 3:
-            tempStr += "color(" + str(data['color']) + ")"
+        if 'color' in data:
+            tempStr += self.color(data['color']))
         if 'location' in data:
-            tempStr += "translate(" + str(data['location']) + ")"
+            tempStr += self.translate(data['location']))
         if 'rotation' in data:
-            tempStr += "rotate(a=" + str(data['rotation']['angle']) + ", v=" + \
-                        str(data['rotation']['axis']) + ")"
+            tempStr += self.rotate(data['rotation'])
         return tempStr
 
     def parseElement(self, data):
@@ -101,13 +100,13 @@ class OpenSCADEngine:
     def holeSides(self, radius):
         return max([math.floor(4*radius), 3])
 
-    def holeRadius(self, radius, sides):
+    def apothem(self, radius, sides):
         return radius / math.cos(180/ sides)
 
     def hole(self, data):
         tempStr = ""
         sides = self.holeSides(data['radius'])
-        radius = self.holeRadius(radius = data['radius'], sides = sides)
+        radius = self.apothem(radius = data['radius'], sides = sides)
         tempStr += self.applyCentering(centering = data['center'],
                                        extrema = [data['radius'],
                                                   data['radius'],
