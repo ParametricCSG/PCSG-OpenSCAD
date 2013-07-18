@@ -82,5 +82,20 @@ class TestElements(unittest.TestCase):
         expect = "translate(v=[2.0, 2.0, -2.5])cylinder(r1=3, r2=4, h=5, $fn=80);"
         self.assertEqual(expect, self.eng.cone(datas))
 
+    def test_hole1(self):
+        datas = {'radius': 3, 'height': 3, 'center':[True,False,True]}
+        expect = "translate(v=[0, 1.6029142706151245, -1.5])cylinder(r=3.205828541230249, h=3, $fn=12);"
+        self.assertEqual(expect, self.eng.hole(datas))
+
+    def test_hole2(self):
+        datas = {'radius': 10, 'height': 50, 'center':[True,True,False]}
+        expect = "cylinder(r=10.130921984828255, h=50, $fn=40);"
+        self.assertEqual(expect, self.eng.hole(datas))
+
+    def test_hole3(self):
+        datas = {'radius': 0.5, 'height': 2, 'center':[False,True,False]}
+        expect = "translate(v=[0.5499999999999999, 0, 0])cylinder(r=1.0999999999999999, h=2, $fn=3);"
+        self.assertEqual(expect, self.eng.hole(datas))
+
 if __name__ == '__main__':
     unittest.main()

@@ -131,10 +131,10 @@ class OpenSCADEngine:
     def hole(self, data):
         tempStr = ""
         sides = self.holeSides(data['radius'])
-        radius = self.apothem(radius = data['radius'], sides = sides)
+        radius = 0.1 + self.apothem(radius = data['radius'], sides = sides)
         tempStr += self.applyCentering(centering = data['center'],
-                                       extrema = [data['radius'],
-                                                  data['radius'],
+                                       extrema = [radius,
+                                                  radius,
                                                   data['height']],
                                        default = [True,True,False])
         tempStr += "cylinder(r="+str(radius)+", h="+str(data['height'])+", $fn="+\
