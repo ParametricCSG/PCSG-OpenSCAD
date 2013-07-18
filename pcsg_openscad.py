@@ -126,7 +126,10 @@ class OpenSCADEngine:
         return max([math.floor(4*radius), 3])
 
     def apothem(self, radius, sides):
-        return radius / math.cos(math.pi/ sides)
+        return radius / math.cos(math.pi / sides)
+
+    def radiusFromApothem(self, apothem, sides):
+        return apothem * math.cos(math.pi / sides)
 
     def hole(self, data):
         tempStr = ""
@@ -144,7 +147,7 @@ class OpenSCADEngine:
     def ntube(self, data):
         tempStr = ""
         sides = data['sides']
-        radius = self.apothem(radius = data['width'], sides = sides)
+        radius = self.radiusFromApothem(apothem = data['apothem'], sides = sides)
         tempStr += self.applyCentering(centering = data['center'],
                                        extrema = [radius, radius,
                                                   data['height']],
