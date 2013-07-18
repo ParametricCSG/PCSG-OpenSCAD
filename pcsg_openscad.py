@@ -94,7 +94,7 @@ class OpenSCADEngine:
         elif data['name'] == "cylinder":
             tempStr += self.cylinder(data)
         elif data['name'] == "ntube":
-            tempStr += self.nTube(data)
+            tempStr += self.ntube(data)
         elif data['name'] == "cone":
             tempStr += self.cone(data)
         elif data['name'] == "hole":
@@ -141,7 +141,7 @@ class OpenSCADEngine:
                     str(sides)+");"
         return tempStr
 
-    def nTube(self, data):
+    def ntube(self, data):
         tempStr = ""
         sides = data['sides']
         radius = self.apothem(radius = data['width'], sides = sides)
