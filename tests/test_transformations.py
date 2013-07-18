@@ -72,9 +72,14 @@ class TestTransformations(unittest.TestCase):
         expect = "multmatrix(m=[[0, 1, 2, 3], [4, 5, 6, 7], [8, 9, 10, 11], [12, 13, 14, 15]])"
         self.assertEqual(expect, self.eng.multmatrix(matrix))
     
-    def test_color(self):
+    def test_color1(self):
         color = [0.5, 0.1, 0.4]
         expect = "color([0.5, 0.1, 0.4])"
+        self.assertEqual(expect, self.eng.color(color))
+
+    def test_color1(self):
+        color = []
+        expect = ""
         self.assertEqual(expect, self.eng.color(color))
 
 if __name__ == '__main__':

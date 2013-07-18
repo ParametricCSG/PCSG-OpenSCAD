@@ -199,7 +199,10 @@ class OpenSCADEngine:
         return "multmatrix(m=" + str(matrix) + ")"
 
     def color(self, color):
-        return "color(" + str(color) + ")"
+        if color:
+            return "color(" + str(color) + ")"
+        else:
+            return ""
 
     def minkowski(self):
         return "minkowski()"
