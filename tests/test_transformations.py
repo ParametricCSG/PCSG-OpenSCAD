@@ -62,9 +62,19 @@ class TestTransformations(unittest.TestCase):
         expect = "mirror([0, 0, 1])"
         self.assertEqual(expect, self.eng.mirror(vect))
 
+    def test_mirror3(self):
+        vect = []
+        expect = ""
+        self.assertEqual(expect, self.eng.mirror(vect))
+
     def test_scale1(self):
         vect = [0.5, 0.501, 10]
         expect = "scale(v=[0.5, 0.501, 10])"
+        self.assertEqual(expect, self.eng.scale(vect))
+
+    def test_scale2(self):
+        vect = []
+        expect = ""
         self.assertEqual(expect, self.eng.scale(vect))
 
     def test_resize(self):
@@ -72,11 +82,16 @@ class TestTransformations(unittest.TestCase):
         expect = "resize(newsize=[10, 30, 40], auto=[true, false, true])"
         self.assertEqual(expect, self.eng.resize(resizer))
 
-    def test_multmatrix(self):
+    def test_multmatrix1(self):
         matrix = [[0,1,2,3],[4,5,6,7],[8,9,10,11],[12,13,14,15]]
         expect = "multmatrix(m=[[0, 1, 2, 3], [4, 5, 6, 7], [8, 9, 10, 11], [12, 13, 14, 15]])"
         self.assertEqual(expect, self.eng.multmatrix(matrix))
-    
+
+    def test_multmatrix2(self):
+        matrix = []
+        expect = ""
+        self.assertEqual(expect, self.eng.multmatrix(matrix))
+
     def test_color1(self):
         color = [0.5, 0.1, 0.4]
         expect = "color([0.5, 0.1, 0.4])"

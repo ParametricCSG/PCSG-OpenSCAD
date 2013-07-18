@@ -18,14 +18,15 @@ class OpenSCADEngine:
         self.level = 0
         self.output = ""
         self.operations = ["union", "difference", "intersection", "hull",
-                           "translate", "rotate"]
-        self.elements = ["cube", "cylinder", "sphere", "cone"]
+                           "translate", "rotate", "minkowski", "mirror", "resize",
+                           "scale"]
+        self.elements = ["cube", "cylinder", "sphere", "cone", "ntube", "hole"]
 
     def parseJSON(self, data):
         if data['category']:
             if data['category'] == "operation":
                 if data['name'] in self.operations:
-                    scadOperation = self.parseOperation(data)
+                    scadOperation = self.parseOperation(data) + "{"
                     self.output += " " * self.level * args.indent + scadOperation
                     for types in data['elements']:
                         self.level += 1
@@ -51,11 +52,25 @@ class OpenSCADEngine:
         """Parse an operation and generate an OpenSCAD equivalent"""
         tempStr = self.parseProperties(data)
         if data['name'] == "translate":
-            tempStr += "translate(" + str(data['location']) + "){"
-        if data['name'] == "rotate":
-            tempStr += self.processRotation(data) + "{"
-        else:
-            tempStr = data['name'] + "(){\n"
+            tempStr += self.translate(data['location'])
+        elif data['name'] == "rotate":
+            tempStr += self.rotate(data)
+        elif data['name'] == "union":
+            tempStr += self.union()
+        elif data['name'] == "difference":
+            tempStr += self.difference()
+        elif data['name'] == "intersection":
+            tempStr += self.intersection()
+        elif data['name'] == "mirror":
+            tempStr += self.mirror(data['axis'])
+        elif data['name'] == "scale":
+            tempStr += self.scale(data['multiplier'])
+        elif data['name'] == "resize":
+            tempStr += self.resize(data)
+        elif data['name'] == "hull":
+            tempStr += self.hull()
+        elif data['name'] == "minkowski":
+            tempStr += self.minkowski()
         return tempStr
 
     def parseProperties(self, data):
@@ -66,6 +81,8 @@ class OpenSCADEngine:
             tempStr += self.translate(data['location'])
         if 'rotation' in data:
             tempStr += self.rotate(data['rotation'])
+        if 'scale' in data:
+            tempStr += self.scale(data['scale'])
         return tempStr
 
     def parseElement(self, data):
@@ -76,6 +93,12 @@ class OpenSCADEngine:
             tempStr += self.sphere(data)
         elif data['name'] == "cylinder":
             tempStr += self.cylinder(data)
+        elif data['name'] == "ntube":
+            tempStr += self.nTube(data)
+        elif data['name'] == "cone":
+            tempStr += self.cone(data)
+        elif data['name'] == "hole":
+            tempStr += self.hole(data)
         return tempStr
 
     def makeBool(self, pyBool):
@@ -189,18 +212,27 @@ class OpenSCADEngine:
             return "translate(v=" + str(location) + ")"
 
     def scale(self, multiplier):
-        return "scale(v=" + str(multiplier) + ")"
+        if multiplier:
+            return "scale(v=" + str(multiplier) + ")"
+        else:
+            return ""
 
     def resize(self, resize):
         cleanedAuto = self.makeBool(resize['auto'])
         return "resize(newsize=" + str(resize['newsize']) + ", auto=" + cleanedAuto + ")"
 
     def mirror(self, axis):
-        cleanedAxis = self.makeBinaryList(axis)
-        return "mirror(" + str(cleanedAxis) + ")"
+        if axis:
+            cleanedAxis = self.makeBinaryList(axis)
+            return "mirror(" + str(cleanedAxis) + ")"
+        else:
+            return ""
 
     def multmatrix(self, matrix):
-        return "multmatrix(m=" + str(matrix) + ")"
+        if matrix:
+            return "multmatrix(m=" + str(matrix) + ")"
+        else:
+            return ""
 
     def color(self, color):
         if color:
