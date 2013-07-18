@@ -47,6 +47,11 @@ class TestTransformations(unittest.TestCase):
         expect = "rotate(a=60, v=[0, 1, 1])"
         self.assertEqual(expect, self.eng.rotate(rotation))
 
+    def test_rotate3(self):
+        rotation = {'angle': 60, 'axis': [False, False, False]}
+        expect = ""
+        self.assertEqual(expect, self.eng.rotate(rotation))
+
     def test_mirror1(self):
         vect = [True, False, True]
         expect = "mirror([1, 0, 1])"

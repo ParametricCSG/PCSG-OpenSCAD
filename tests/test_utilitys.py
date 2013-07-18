@@ -29,7 +29,7 @@ class TestUtilities(unittest.TestCase):
 
     def test_makeBinaryList1(self):
         vect = [True, False, False]
-        expect = "[1, 0, 0]"
+        expect = [1, 0, 0]
         self.assertEqual(expect, self.eng.makeBinaryList(vect))
 
     def test_applyCentering1(self):

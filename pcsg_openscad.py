@@ -30,6 +30,7 @@ class OpenSCADEngine:
                     for types in data['elements']:
                         self.level += 1
                         self.parseJSON(types)
+                        self.output += "\n"
                         self.level -= 1
                     self.output += " " * self.level * args.indent + "}\n"
                 else:
@@ -86,7 +87,7 @@ class OpenSCADEngine:
 
     def makeBinaryList(self, vector):
         """If a value is true/false in a list make it 1/0"""
-        return str(list(map(int, vector)))
+        return list(map(int, vector))
 
     def applyCentering(self, centering, extrema, default=[False,False,False]):
         """Returns a translationg statement to apply centering by axis"""
@@ -175,7 +176,10 @@ class OpenSCADEngine:
 
     def rotate(self, rotation):
         cleanedAxis = self.makeBinaryList(rotation['axis'])
-        return "rotate(a=" + str(rotation['angle']) + ", v=" + \
+        if self.isAllZeros(cleanedAxis):
+            return ""
+        else:
+            return "rotate(a=" + str(rotation['angle']) + ", v=" + \
                          str(cleanedAxis) + ")"
 
     def translate(self, location):
