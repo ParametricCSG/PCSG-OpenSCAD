@@ -43,8 +43,12 @@ class OpenSCADEngine:
                 self.output += " " * self.level * args.indent + props
                 if data['name'] in self.elements:
                     self.output += self.parseElement(data)
+                elif self.level == 0:
+                    print("Found element '" + data['name'] + "' at top level")
+                    print("Unrecognized by the parser... traversing to construction")
+                    self.parseJSON(data['construction'])
                 else:
-                    print("Found top level element " + data['name'])
+                    print("Found element '" + data['name'] + "' at level " + str(self.level))
                     print("Unrecognized by the parser... traversing to construction")
                     self.parseJSON(data['construction'])
 
