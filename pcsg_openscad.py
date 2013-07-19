@@ -26,7 +26,7 @@ class OpenSCADEngine:
         if data['category']:
             if data['category'] == "operation":
                 if data['name'] in self.operations:
-                    scadOperation = self.parseOperation(data) + "{"
+                    scadOperation = self.parseOperation(data) + "{\n"
                     self.output += " " * self.level * args.indent + scadOperation
                     for types in data['elements']:
                         self.level += 1
