@@ -54,17 +54,17 @@ class TestElements(unittest.TestCase):
 
     def test_ntube1(self):
         datas = {'apothem': 4, 'sides': 6, 'height': 5, 'center':[True,True,False]}
-        expect = "cylinder(r=3.464101615137755, h=5, $fn=6);"
+        expect = "cylinder(r=4.618802153517006, h=5, $fn=6);"
         self.assertEqual(expect, self.eng.ntube(datas))
 
     def test_ntube2(self):
         datas = {'apothem': 10, 'sides': 12, 'height': 12, 'center':[True,False,False]}
-        expect = "translate(v=[0, 4.8296291314453415, 0])cylinder(r=9.659258262890683, h=12, $fn=12);"
+        expect = "translate(v=[0, 5.176380902050415, 0])cylinder(r=10.35276180410083, h=12, $fn=12);"
         self.assertEqual(expect, self.eng.ntube(datas))
 
     def test_ntube3(self):
         datas = {'apothem': 2, 'sides': 3, 'height': 4, 'center':[False,False,True]}
-        expect = "translate(v=[0.5000000000000001, 0.5000000000000001, -2.0])cylinder(r=1.0000000000000002, h=4, $fn=3);"
+        expect = "translate(v=[1.9999999999999996, 1.9999999999999996, -2.0])cylinder(r=3.999999999999999, h=4, $fn=3);"
         self.assertEqual(expect, self.eng.ntube(datas))
 
     def test_cone1(self):

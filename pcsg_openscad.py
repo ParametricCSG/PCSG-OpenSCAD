@@ -126,18 +126,17 @@ class OpenSCADEngine:
         return max([math.floor(4*radius), 3])
 
     def apothem(self, radius, sides):
-        return radius / math.cos(math.pi / sides)
+        return radius * math.cos(math.pi / sides)
 
     def radiusFromApothem(self, apothem, sides):
-        return apothem * math.cos(math.pi / sides)
+        return apothem / math.cos(math.pi / sides)
 
     def hole(self, data):
         tempStr = ""
         sides = self.holeSides(data['radius'])
-        radius = 0.1 + self.apothem(radius = data['radius'], sides = sides)
+        radius = 0.1 + self.radiusFromApothem(apothem = data['radius'], sides = sides)
         tempStr += self.applyCentering(centering = data['center'],
-                                       extrema = [radius,
-                                                  radius,
+                                       extrema = [radius, radius,
                                                   data['height']],
                                        default = [True,True,False])
         tempStr += "cylinder(r="+str(radius)+", h="+str(data['height'])+", $fn="+\

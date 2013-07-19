@@ -75,26 +75,26 @@ class TestUtilities(unittest.TestCase):
     def test_apothem1(self):
         radius = 3
         sides = 6
-        expect = 3.4641016151377544
+        expect = 2.598076211353316
         self.assertEqual(expect, self.eng.apothem(radius=radius, sides=sides))
 
     def test_apothem2(self):
         radius = 3
         sides = 7
-        expect = 3.329748792524227
+        expect = 2.7029066037072575
         self.assertEqual(expect, self.eng.apothem(radius=radius, sides=sides))
 
     def test_radiusFromApothem1(self):
         apothem = 3
         sides = 6
-        expect = 2.598076211353316
+        expect = 3.4641016151377544
         self.assertEqual(expect, self.eng.radiusFromApothem(apothem=apothem,
                                                   sides=sides))
 
     def test_radiusFromApothem2(self):
         apothem = 3
         sides = 7
-        expect = 2.7029066037072575
+        expect = 3.329748792524227
         self.assertEqual(expect, self.eng.radiusFromApothem(apothem=apothem,
                                                             sides=sides))
 
