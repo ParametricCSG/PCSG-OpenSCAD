@@ -79,6 +79,8 @@ class OpenSCADEngine:
 
     def parseProperties(self, data):
         tempStr = ""
+        if 'highlight' in data:
+            tempStr += self.highlight()
         if 'color' in data:
             tempStr += self.color(data['color'])
         if 'location' in data:
@@ -260,6 +262,9 @@ class OpenSCADEngine:
 
     def intersection(self):
         return "intersection()"
+
+    def highlight(self):
+        return "#"
 
 if __name__=="__main__":
     #Setup Command line arguments
