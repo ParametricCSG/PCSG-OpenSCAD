@@ -269,13 +269,13 @@ class OpenSCADEngine:
 if __name__=="__main__":
     #Setup Command line arguments
     parser = argparse.ArgumentParser(
-        prog = "pcsg-openscad",
+        prog = "textcad",
         usage = "%(prog)s [options] input...",
-        description = "An engine for PCSG using OpenSCAD."
+        description = "An engine for textcad using OpenSCAD."
         )
     parser.add_argument("-o", "--output", nargs='?', type=argparse.FileType('w'), default=sys.stdout, help = "Output file, defaults to stdout")
     parser.add_argument("input", nargs='?', type=argparse.FileType('r'), default=sys.stdin, help = "Input file, defaults to stdin")
-    parser.add_argument("-v", "--verbose", type=bool, help="verbose output while traversing PCSG file")
+    parser.add_argument("-v", "--verbose", type=bool, help="verbose output while traversing textcad file")
     parser.add_argument("-s", "--show", action='store_true', default=False, help="launch OpenSCAD with the file when finished")
     parser.add_argument("-i", "--indent", type=int, default=4, help="set number of spaces for indentation (default: 4)")
     parser.add_argument('--version', action='version', version="%(prog)s 0.0.1-dev")

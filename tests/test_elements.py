@@ -1,11 +1,11 @@
 #!/usr/bin/python3.3
-import pcsg_openscad
+import textcad_engine
 import unittest
 
 class TestElements(unittest.TestCase):
 
     def setUp(self):
-        self.eng = pcsg_openscad.OpenSCADEngine()
+        self.eng = textcad_engine.OpenSCADEngine()
 
     def test_cube1(self):
         datas = {'center': [True,True,True], 'size': [10,20,30]}

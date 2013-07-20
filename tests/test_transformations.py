@@ -1,11 +1,11 @@
 #!/usr/bin/python3.3
-import pcsg_openscad
+import textcad_engine
 import unittest
 
 class TestTransformations(unittest.TestCase):
 
     def setUp(self):
-        self.eng = pcsg_openscad.OpenSCADEngine()
+        self.eng = textcad_engine.OpenSCADEngine()
 
     def test_translate1(self):
         vect = [1, 2, 3]

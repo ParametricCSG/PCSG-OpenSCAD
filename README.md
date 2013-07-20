@@ -1,5 +1,5 @@
-#PCSG-OpenSCAD
-A parser to convert PCSG JSON files into OpenSCAD.
+#textcad
+A parser to convert textcad JSON files into OpenSCAD.
 
 ##License
-MIT
+MIT, see LICENSE.txt
