@@ -23,34 +23,39 @@ class OpenSCADEngine:
         self.elements = ["cube", "cylinder", "sphere", "cone", "ntube", "hole"]
 
     def parseJSON(self, data):
+        output = ""
         if data['category']:
             if data['category'] == "operation":
                 if data['name'] in self.operations:
                     scadOperation = self.parseOperation(data) + "{\n"
-                    self.output += " " * self.level * args.indent + scadOperation
+                    output += " " * self.level * args.indent + scadOperation
                     for types in data['elements']:
                         self.level += 1
-                        self.parseJSON(types)
-                        self.output += "\n"
+                        output += self.parseJSON(types)
+                        output += "\n"
                         self.level -= 1
-                    self.output += " " * self.level * args.indent + "}\n"
+                    output += " " * self.level * args.indent + "}\n"
+                    return output
                 else:
                     a = "echo("+data['name']+");"
                     self.output += a
                     self.parseJSON(data['construction'])
             if data['category'] == "element":
                 props = self.parseProperties(data)
-                self.output += " " * self.level * args.indent + props
+                output += " " * self.level * args.indent + props
                 if data['name'] in self.elements:
-                    self.output += self.parseElement(data)
+                    output += self.parseElement(data)
+                    return output
                 elif self.level == 0:
                     print("Found element '" + data['name'] + "' at top level")
                     print("Unrecognized by the parser... traversing to construction")
-                    self.parseJSON(data['construction'])
+                    output += self.parseJSON(data['construction'])
+                    return output
                 else:
                     print("Found element '" + data['name'] + "' at level " + str(self.level))
                     print("Unrecognized by the parser... traversing to construction")
-                    self.parseJSON(data['construction'])
+                    output += self.parseJSON(data['construction'])
+                    return output
 
     def parseOperation(self, data):
         """Parse an operation and generate an OpenSCAD equivalent"""
@@ -289,7 +294,7 @@ if __name__=="__main__":
 
     j = json.loads(args.input.read())
     c = OpenSCADEngine()
-    c.parseJSON(j)
+    c.output = c.parseJSON(j)
     args.output.write(c.output)
     if args.show:
         subprocess.Popen(["openscad", os.path.abspath(args.output.name)])
