@@ -1,5 +1,4 @@
-#! /usr/bin/python3.3
-from __future__ import absolute_import, division, print_function, unicode_literals
+#! /usr/bin/python3
 import argparse
 import sys
 import json
@@ -7,19 +6,20 @@ import os
 import subprocess
 import math
 
-'''
-Operation:
-Evaluate and regenerate JSON tree by order...
-required elements, parameters, parameter operations, elements, element operations
-'''
 
 class OpenSCADEngine:
+    """
+    Operation:
+    Evaluate and regenerate JSON tree by order...
+    required elements, parameters,
+    parameter operations, elements, element operations
+    """
     def __init__(self):
         self.level = 0
         self.output = ""
         self.operations = ["union", "difference", "intersection", "hull",
-                           "translate", "rotate", "minkowski", "mirror", "resize",
-                           "scale"]
+                           "translate", "rotate", "minkowski", "mirror",
+                           "resize", "scale"]
         self.elements = ["cube", "cylinder", "sphere", "cone", "ntube", "hole"]
 
     def parseJSON(self, data):
@@ -48,17 +48,20 @@ class OpenSCADEngine:
                     return output
                 elif self.level == 0:
                     print("Found element '" + data['name'] + "' at top level")
-                    print("Unrecognized by the parser... traversing to construction")
+                    print("Traversing to construction")
                     output += self.parseJSON(data['construction'])
                     return output
                 else:
-                    print("Found element '" + data['name'] + "' at level " + str(self.level))
-                    print("Unrecognized by the parser... traversing to construction")
+                    print("Found element '" + data['name']
+                          + "' at level " + str(self.level))
+                    print("Traversing to construction.")
                     output += self.parseJSON(data['construction'])
                     return output
 
     def parseOperation(self, data):
-        """Parse an operation and generate an OpenSCAD equivalent"""
+        """
+        Parse an operation and return an OpenSCAD equivalent
+        """
         tempStr = self.parseProperties(data)
         if data['name'] == "translate":
             tempStr += self.translate(data['location'])
@@ -113,17 +116,24 @@ class OpenSCADEngine:
         return tempStr
 
     def makeBool(self, pyBool):
-        """Takes a Python bool (type, or list of bools) and returns an OpenSCAD bool string"""
+        """
+        Args: List of booleans
+        Returns: an OpenSCAD compatible bool string
+        """
         return str(pyBool).lower()
 
     def isAllZeros(self, vector):
-        return all( v == 0 for v in vector)
+        return all(v == 0 for v in vector)
 
     def makeBinaryList(self, vector):
         """If a value is true/false in a list make it 1/0"""
         return list(map(int, vector))
 
-    def applyCentering(self, centering, extrema, default=[False,False,False]):
+    def applyCentering(self,
+                       centering,
+                       extrema,
+                       default=[False, False, False]
+                       ):
         """Returns a translationg statement to apply centering by axis"""
         vect = [0, 0, 0]
         for idx, val in enumerate(centering):
@@ -145,69 +155,80 @@ class OpenSCADEngine:
     def hole(self, data):
         tempStr = ""
         sides = self.holeSides(data['radius'])
-        radius = 0.1 + self.radiusFromApothem(apothem = data['radius'], sides = sides)
-        tempStr += self.applyCentering(centering = data['center'],
-                                       extrema = [radius, radius,
-                                                  data['height']],
-                                       default = [True,True,False])
-        tempStr += "cylinder(r="+str(radius)+", h="+str(data['height'])+", $fn="+\
-                    str(sides)+");"
+        radius = 0.1 + self.radiusFromApothem(apothem=data['radius'],
+                                              sides=sides)
+        tempStr += self.applyCentering(centering=data['center'],
+                                       extrema=[radius, radius,
+                                                data['height']],
+                                       default=[True, True, False])
+        tempStr += "cylinder(r=" + str(radius) + ", h=" + str(data['height']) \
+                   + ", $fn=" + str(sides)+");"
         return tempStr
 
     def ntube(self, data):
         tempStr = ""
         sides = data['sides']
-        radius = self.radiusFromApothem(apothem = data['apothem'], sides = sides)
-        tempStr += self.applyCentering(centering = data['center'],
-                                       extrema = [radius, radius,
-                                                  data['height']],
-                                       default = [True,True,False])
-        tempStr += "cylinder(r="+str(radius)+", h="+str(data['height'])+", $fn="+\
-                    str(sides)+");"
+        radius = self.radiusFromApothem(apothem=data['apothem'], sides=sides)
+        tempStr += self.applyCentering(centering=data['center'],
+                                       extrema=[radius, radius,
+                                                data['height']],
+                                       default=[True, True, False])
+        tempStr += "cylinder(r="+str(radius) + ", h="+str(data['height']) \
+                   + ", $fn=" + str(sides)+");"
         return tempStr
 
     def cone(self, data):
-        """Take a python dictionary and make an OpenSCAD compatible Cube string"""
+        """
+        Returns an OpenSCAD cylinder string
+        """
         tempStr = ""
         maxRadius = max([data['topRadius'], data['bottomRadius']])
-        tempStr += self.applyCentering(centering = data['center'],
-                                       extrema = [maxRadius,
-                                                  maxRadius,
-                                                  data['height']],
-                                       default = [True,True,False])
-        tempStr += "cylinder(r1=" + str(data['bottomRadius']) +", r2=" + \
-                    str(data['topRadius']) + ", h=" + str(data['height']) + \
-                    ", $fn=" + str(maxRadius*20) + ");"
+        tempStr += self.applyCentering(centering=data['center'],
+                                       extrema=[maxRadius,
+                                                maxRadius,
+                                                data['height']],
+                                       default=[True, True, False])
+        tempStr += "cylinder(r1=" + str(data['bottomRadius']) + ", r2=" \
+                   + str(data['topRadius']) + ", h=" + str(data['height']) \
+                   + ", $fn=" + str(maxRadius*20) + ");"
         return tempStr
 
     def cube(self, data):
-        """Take a python dictionary and make an OpenSCAD compatible Cube string"""
+        """
+        Returns an OpenSCAD cube string
+        """
         tempStr = ""
-        tempStr += self.applyCentering(centering = data['center'],
-                                       extrema = data['size'],
-                                       default = [False,False,False])
+        tempStr += self.applyCentering(centering=data['center'],
+                                       extrema=data['size'],
+                                       default=[False, False, False])
         tempStr += "cube(size=" + str(data['size']) + ");"
         return tempStr
 
     def sphere(self, data):
-        """Take a python dictionary and make an OpenSCAD compatible Sphere string"""
+        """
+        Returns an OpenSCAD sphere string
+        """
         tempStr = ""
-        tempStr += self.applyCentering(centering = data['center'],
-                                       extrema = [data['radius']]*3,
-                                       default = [True,True,True])
-        tempStr += "sphere(r=" + str(data['radius']) + ", $fn=" + str(data['radius']*20) + ");"
+        tempStr += self.applyCentering(centering=data['center'],
+                                       extrema=[data['radius']]*3,
+                                       default=[True, True, True])
+        tempStr += "sphere(r=" + str(data['radius']) \
+                   + ", $fn=" + str(data['radius']*20) + ");"
         return tempStr
 
     def cylinder(self, data):
-        """Take a python dictionary and make an OpenSCAD compatible Cube string"""
+        """
+        Returns an OpenSCAD cylinder string
+        """
         tempStr = ""
-        tempStr += self.applyCentering(centering = data['center'],
-                                       extrema = [data['radius'],
-                                                  data['radius'],
-                                                  data['height']],
-                                       default = [True,True,False])
-        tempStr += "cylinder(r=" + str(data['radius']) + ", h=" + str(data['height']) \
-              + ", $fn=" + str((data['radius'])*20) + ");"
+        tempStr += self.applyCentering(centering=data['center'],
+                                       extrema=[data['radius'],
+                                                data['radius'],
+                                                data['height']],
+                                       default=[True, True, False])
+        tempStr += "cylinder(r=" + str(data['radius']) + ", h=" \
+                   + str(data['height']) + ", $fn=" \
+                   + str((data['radius'])*20) + ");"
         return tempStr
 
     def rotate(self, rotation):
@@ -215,8 +236,8 @@ class OpenSCADEngine:
         if self.isAllZeros(cleanedAxis):
             return ""
         else:
-            return "rotate(a=" + str(rotation['angle']) + ", v=" + \
-                         str(cleanedAxis) + ")"
+            return "rotate(a=" + str(rotation['angle']) + ", v=" \
+                   + str(cleanedAxis) + ")"
 
     def translate(self, location):
         if self.isAllZeros(location):
@@ -232,7 +253,8 @@ class OpenSCADEngine:
 
     def resize(self, resize):
         cleanedAuto = self.makeBool(resize['auto'])
-        return "resize(newsize=" + str(resize['newsize']) + ", auto=" + cleanedAuto + ")"
+        return "resize(newsize=" + str(resize['newsize']) \
+               + ", auto=" + cleanedAuto + ")"
 
     def mirror(self, axis):
         if axis:
@@ -271,24 +293,45 @@ class OpenSCADEngine:
     def highlight(self):
         return "#"
 
-if __name__=="__main__":
+if __name__ == "__main__":
     #Setup Command line arguments
-    parser = argparse.ArgumentParser(
-        prog = "textcad",
-        usage = "%(prog)s [options] input...",
-        description = "An engine for textcad using OpenSCAD."
-        )
-    parser.add_argument("-o", "--output", nargs='?', type=argparse.FileType('w'), default=sys.stdout, help = "Output file, defaults to stdout")
-    parser.add_argument("input", nargs='?', type=argparse.FileType('r'), default=sys.stdin, help = "Input file, defaults to stdin")
-    parser.add_argument("-v", "--verbose", type=bool, help="verbose output while traversing textcad file")
-    parser.add_argument("-s", "--show", action='store_true', default=False, help="launch OpenSCAD with the file when finished")
-    parser.add_argument("-i", "--indent", type=int, default=4, help="set number of spaces for indentation (default: 4)")
-    parser.add_argument('--version', action='version', version="%(prog)s 0.0.1-dev")
+    parser = argparse.ArgumentParser(prog="textcad",
+                                     usage="%(prog)s [options] input...",
+                                     description="The textcad engine."
+                                     )
+    parser.add_argument("-o", "--output", nargs='?',
+                        type=argparse.FileType('w'),
+                        default=sys.stdout,
+                        help="Output file, defaults to stdout"
+                        )
+    parser.add_argument("input", nargs='?',
+                        type=argparse.FileType('r'),
+                        default=sys.stdin,
+                        help="input file, defaults to stdin"
+                        )
+    parser.add_argument("-v", "--verbose",
+                        type=bool,
+                        help="verbose output while traversing textcad file"
+                        )
+    parser.add_argument("-s", "--show",
+                        action='store_true',
+                        default=False,
+                        help="launch OpenSCAD with the file when finished"
+                        )
+    parser.add_argument("-i", "--indent",
+                        type=int,
+                        default=4,
+                        help="number of spaces for indentation (default: 4)"
+                        )
+    parser.add_argument('--version',
+                        action='version',
+                        version="%(prog)s 0.0.1-dev"
+                        )
 
     #Always output help by default
     if len(sys.argv) == 1:
         parser.print_help()
-        sys.exit(0) # exit after help display
+        sys.exit(0)  # Exit after help display
 
     args = parser.parse_args()
 
