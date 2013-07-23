@@ -155,8 +155,8 @@ class OpenSCADEngine:
     def hole(self, data):
         tempStr = ""
         sides = self.holeSides(data['radius'])
-        radius = 0.1 + self.radiusFromApothem(apothem=data['radius'],
-                                              sides=sides)
+        radius = self.radiusFromApothem(apothem=data['radius'],
+                                        sides=sides)
         tempStr += self.applyCentering(centering=data['center'],
                                        extrema=[radius, radius,
                                                 data['height']],
