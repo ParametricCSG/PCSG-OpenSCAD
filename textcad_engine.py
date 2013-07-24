@@ -157,6 +157,8 @@ class OpenSCADEngine:
         sides = self.holeSides(data['radius'])
         radius = self.radiusFromApothem(apothem=data['radius'],
                                         sides=sides)
+        if 'tolerance' in data:
+            radius += data['tolerance']
         tempStr += self.applyCentering(centering=data['center'],
                                        extrema=[radius, radius,
                                                 data['height']],
